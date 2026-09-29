@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EBiDAN 国顔診断</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --gold: #b99a5b;
+  --gold-light: #d8c28b;
+  --black: #222;
+  --gray: #777;
+  --ivory: #faf9f5;
+  --white: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top, #fffdf8 0%, #fff 45%, #f8f7f3 100%);
+  color: var(--black);
+  font-family: "Noto Serif JP", serif;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 25px 16px 60px;
+}
+
+.container {
+  width: min(100%, 1050px);
+  margin: auto;
+}
+
+.gold-line {
+  width: 80px;
+  height: 1px;
+  background: var(--gold);
+  margin: 18px auto;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* =========================
+   TOP
+========================= */
+
+#startScreen {
+  text-align: center;
+  padding-top: 10vh;
+}
+
+.crown {
+  color: var(--gold);
+  font-size: 35px;
+  letter-spacing: 8px;
+}
+
+.english-title {
+  font-family: "Cormorant Garamond", serif;
+  color: var(--gold);
+  font-size: 18px;
+  letter-spacing: 5px;
+  margin-top: 12px;
+}
+
+.main-title {
+  font-size: clamp(40px, 9vw, 75px);
+  letter-spacing: 12px;
+  font-weight: 500;
+  margin: 10px 0 0;
+}
+
+.subtitle {
+  font-family: "Cormorant Garamond", serif;
+  color: #777;
+  font-size: 18px;
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+
+.intro-box {
+  max-width: 680px;
+  margin: 45px auto;
+  padding: 35px 25px;
+  border: 1px solid var(--gold-light);
+  background: rgba(255,255,255,.8);
+  box-shadow: 0 12px 35px rgba(120,100,60,.08);
+}
+
+.intro-box p {
+  line-height: 2;
+  margin: 8px 0;
+}
+
+.start-button,
+.restart-button {
+  border: 1px solid var(--gold);
+  background: white;
+  color: #6d5627;
+  padding: 16px 60px;
+  font-size: 16px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.start-button:hover,
+.restart-button:hover {
+  background: var(--gold);
+  color: white;
+}
+
+/* =========================
+   QUESTION
+========================= */
+
+.question-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.small-title {
+  font-family: "Cormorant Garamond", serif;
+  color: var(--gold);
+  letter-spacing: 4px;
+  font-size: 17px;
+}
+
+.question-number {
+  font-size: 15px;
+  color: #777;
+  margin-top: 8px;
+}
+
+.progress-wrap {
+  width: min(500px, 90%);
+  height: 3px;
+  background: #eee;
+  margin: 15px auto 35px;
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: .4s;
+}
+
+.choice-title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 25px;
+  letter-spacing: 2px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  max-width: 850px;
+  margin: auto;
+}
+
+.member-card {
+  background: white;
+  border: 1px solid #e2d6b9;
+  padding: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: .3s;
+  box-shadow: 0 8px 25px rgba(80,60,30,.07);
+}
+
+.member-card::before,
+.member-card::after {
+  content: "";
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+
+.member-card::before {
+  top: 5px;
+  left: 5px;
+  border-width: 1px 0 0 1px;
+}
+
+.member-card::after {
+  right: 5px;
+  bottom: 5px;
+  border-width: 0 1px 1px 0;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(80,60,30,.13);
+}
+
+.member-photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background:
+    linear-gradient(135deg, #faf9f5, #eee9dd);
+  display: block;
+}
+
+.photo-placeholder {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(135deg, #faf9f5, #eee9dd);
+  color: var(--gold);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 50px;
+}
+
+.member-name {
+  text-align: center;
+  font-size: 21px;
+  margin: 15px 0 3px;
+}
+
+.member-group {
+  text-align: center;
+  color: #888;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.tap-text {
+  text-align: center;
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+/* =========================
+   RESULT
+========================= */
+
+#resultScreen {
+  text-align: center;
+}
+
+.result-heading {
+  font-family: "Cormorant Garamond", serif;
+  color: var(--gold);
+  font-size: 20px;
+  letter-spacing: 5px;
+}
+
+.result-title {
+  font-size: clamp(32px, 8vw, 60px);
+  font-weight: 500;
+  margin: 8px 0;
+}
+
+.result-description {
+  max-width: 700px;
+  margin: 25px auto 40px;
+  line-height: 2;
+  color: #555;
+}
+
+.result-card {
+  max-width: 720px;
+  margin: auto;
+  padding: 45px 25px;
+  background: white;
+  border: 1px solid var(--gold-light);
+  box-shadow: 0 15px 45px rgba(100,80,40,.09);
+}
+
+.type-icon {
+  font-size: 50px;
+}
+
+.type-name {
+  font-size: 32px;
+  margin: 12px 0;
+}
+
+.result-percent {
+  font-family: "Cormorant Garamond", serif;
+  color: var(--gold);
+  font-size: 30px;
+}
+
+.breakdown {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: left;
+}
+
+.breakdown-title {
+  text-align: center;
+  color: var(--gold);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.type-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 55px;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.bar {
+  height: 7px;
+  background: #eee;
+}
+
+.bar-inner {
+  height: 100%;
+  background: var(--gold);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 60px;
+  color: #999;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 600px) {
+  .cards {
+    gap: 10px;
+  }
+
+  .member-card {
+    padding: 8px;
+  }
+
+  .member-name {
+    font-size: 17px;
+  }
+
+  .main-title {
+    letter-spacing: 7px;
+  }
+
+  .type-row {
+    grid-template-columns: 90px 1fr 45px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+<div class="container">
+
+<!-- =========================
+     START
+========================= -->
+
+<section id="startScreen" class="screen active">
+
+  <div class="crown">♕</div>
+
+  <div class="english-title">
+    EBiDAN FACE DIAGNOSIS
+  </div>
+
+  <h1 class="main-title">
+    国顔診断
+  </h1>
+
+  <div class="subtitle">
+    ― あなたが惹かれる顔は、どの国の顔？ ―
+  </div>
+
+  <div class="gold-line"></div>
+
+  <div class="intro-box">
+    <p>
+      EBiDANメンバーの顔を選んで、<br>
+      あなたの「好きな顔」の国顔タイプを診断します。
+    </p>
+
+    <p>
+      直感で「好き♡」と思う方を選んでください。
+    </p>
+
+    <p>
+      あなたの美意識が導く、<br>
+      運命の国顔とは――。
+    </p>
+  </div>
+
+  <button class="start-button" onclick="startDiagnosis()">
+    診断をはじめる
+  </button>
+
+  <div class="footer">
+    EBiDAN FACE DIAGNOSIS
+  </div>
+
+</section>
+
+
+<!-- =========================
+     QUESTION
+========================= -->
+
+<section id="questionScreen" class="screen">
+
+  <div class="question-header">
+
+    <div class="small-title">
+      EBiDAN FACE DIAGNOSIS
+    </div>
+
+    <div class="question-number" id="questionNumber">
+      QUESTION 1 / 15
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress" id="progress"></div>
+    </div>
+
+  </div>
+
+  <div class="choice-title">
+    直感で、好きな顔を選んでください
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+</section>
+
+
+<!-- =========================
+     RESULT
+========================= -->
+
+<section id="resultScreen" class="screen">
+
+  <div class="result-heading">
+    YOUR RESULT
+  </div>
+
+  <div class="gold-line"></div>
+
+  <div class="result-card">
+
+    <div class="type-icon" id="resultIcon"></div>
+
+    <div class="type-name" id="resultType"></div>
+
+    <div class="result-percent" id="resultPercent"></div>
+
+    <p class="result-description" id="resultDescription"></p>
+
+  </div>
+
+  <div class="breakdown">
+
+    <div class="breakdown-title">
+      あなたの国顔分布
+    </div>
+
+    <div id="breakdown"></div>
+
+  </div>
+
+  <button class="restart-button" onclick="restartDiagnosis()">
+    もう一度診断する
+  </button>
+
+  <div class="footer">
+    EBiDAN FACE DIAGNOSIS
+  </div>
+
+</section>
+
+</div>
+</div>
+
+
+<script>
+
+/* =========================================================
+   EBiDAN MEMBERS
+   photo に最新の宣材写真URLを入れてください
+========================================================= */
+
+const members = [
+
+  /* 超特急 */
+  {
+    name: "カイ",
+    group: "超特急",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "リョウガ",
+    group: "超特急",
+    type: "亡国顔",
+    photo: ""
+  },
+  {
+    name: "タクヤ",
+    group: "超特急",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "ユーキ",
+    group: "超特急",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "タカシ",
+    group: "超特急",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "シューヤ",
+    group: "超特急",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "マサヒロ",
+    group: "超特急",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "アロハ",
+    group: "超特急",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "ハル",
+    group: "超特急",
+    type: "救国顔",
+    photo: ""
+  },
+
+  /* M!LK */
+  {
+    name: "佐野勇斗",
+    group: "M!LK",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "山中柔太朗",
+    group: "M!LK",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "曽野舜太",
+    group: "M!LK",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "塩﨑太智",
+    group: "M!LK",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "吉田仁人",
+    group: "M!LK",
+    type: "護国顔",
+    photo: ""
+  },
+
+  /* SUPER★DRAGON */
+  {
+    name: "古川毅",
+    group: "SUPER★DRAGON",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "ジャン海渡",
+    group: "SUPER★DRAGON",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "飯島颯",
+    group: "SUPER★DRAGON",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "伊藤壮吾",
+    group: "SUPER★DRAGON",
+    type: "亡国顔",
+    photo: ""
+  },
+  {
+    name: "田中洸希",
+    group: "SUPER★DRAGON",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "池田彪馬",
+    group: "SUPER★DRAGON",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "松村和哉",
+    group: "SUPER★DRAGON",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "柴崎楽",
+    group: "SUPER★DRAGON",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "志村玲於",
+    group: "SUPER★DRAGON",
+    type: "護国顔",
+    photo: ""
+  },
+
+  /* Sakurashimeji */
+  {
+    name: "田中雅功",
+    group: "Sakurashimeji",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "髙田彪我",
+    group: "Sakurashimeji",
+    type: "救国顔",
+    photo: ""
+  },
+
+  /* ONE N' ONLY */
+  {
+    name: "TETTA",
+    group: "ONE N' ONLY",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "REI",
+    group: "ONE N' ONLY",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "EIKU",
+    group: "ONE N' ONLY",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "HAYATO",
+    group: "ONE N' ONLY",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "NAOYA",
+    group: "ONE N' ONLY",
+    type: "継承顔",
+    photo: ""
+  },
+
+  /* 原因は自分にある。 */
+  {
+    name: "大倉空人",
+    group: "原因は自分にある。",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "小泉光咲",
+    group: "原因は自分にある。",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "桜木雅哉",
+    group: "原因は自分にある。",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "長野凌大",
+    group: "原因は自分にある。",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "武藤潤",
+    group: "原因は自分にある。",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "杢代和人",
+    group: "原因は自分にある。",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "吉澤要人",
+    group: "原因は自分にある。",
+    type: "亡国顔",
+    photo: ""
+  },
+
+  /* BUDDiiS */
+  {
+    name: "FUMINORI",
+    group: "BUDDiiS",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "KEVIN",
+    group: "BUDDiiS",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "MORRIE",
+    group: "BUDDiiS",
+    type: "亡国顔",
+    photo: ""
+  },
+  {
+    name: "SEIYA",
+    group: "BUDDiiS",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "YUMA",
+    group: "BUDDiiS",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "SHOW",
+    group: "BUDDiiS",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "TAKUYA",
+    group: "BUDDiiS",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "FUMIYA",
+    group: "BUDDiiS",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "SHOOT",
+    group: "BUDDiiS",
+    type: "救国顔",
+    photo: ""
+  },
+
+  /* ICEx */
+  {
+    name: "志賀李玖",
+    group: "ICEx",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "阿久根温世",
+    group: "ICEx",
+    type: "建国顔",
+    photo: ""
+  },
+  {
+    name: "千田波空斗",
+    group: "ICEx",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "筒井俊旭",
+    group: "ICEx",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "山本龍人",
+    group: "ICEx",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "竹野世那",
+    group: "ICEx",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "中村旺太郎",
+    group: "ICEx",
+    type: "救国顔",
+    photo: ""
+  },
+
+  /* Lienel */
+  {
+    name: "森田璃空",
+    group: "Lienel",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "近藤駿太",
+    group: "Lienel",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "高岡ミロ",
+    group: "Lienel",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "高桑真之",
+    group: "Lienel",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "芳賀柊斗",
+    group: "Lienel",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "武田創世",
+    group: "Lienel",
+    type: "継承顔",
+    photo: ""
+  },
+
+  /* iiONDO */
+  {
+    name: "三村航輝",
+    group: "iiONDO",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "畑駿平",
+    group: "iiONDO",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "守本勝倶",
+    group: "iiONDO",
+    type: "敵国顔",
+    photo: ""
+  },
+  {
+    name: "髙橋夢人",
+    group: "iiONDO",
+    type: "傾国顔",
+    photo: ""
+  },
+  {
+    name: "宮本琉成",
+    group: "iiONDO",
+    type: "護国顔",
+    photo: ""
+  },
+  {
+    name: "大野遥斗",
+    group: "iiONDO",
+    type: "継承顔",
+    photo: ""
+  },
+  {
+    name: "堀蒼寿",
+    group: "iiONDO",
+    type: "救国顔",
+    photo: ""
+  },
+  {
+    name: "三戸琳仁",
+    group: "iiONDO",
+    type: "継承顔",
+    photo: ""
+  }
+
+];
+
+
+/* =========================================================
+   FACE TYPES
+========================================================= */
+
+const faceTypes = {
+
+  "建国顔": {
+    icon: "☀️",
+    description:
+      "太陽のような華やかさと強い存在感を持つ顔。健康的で堂々とした美しさがあり、自然と人の視線を集めるタイプ。"
+  },
+
+  "継承顔": {
+    icon: "👑",
+    description:
+      "あどけなさと品のよさをあわせ持つ、王子様のような顔。優しい微笑みと上品な雰囲気が魅力のタイプ。"
+  },
+
+  "護国顔": {
+    icon: "⚔️",
+    description:
+      "きりっとした眼差しと凛々しさを持つ、物語の中で国を守るような顔。男前で芯の強さを感じさせるタイプ。"
+  },
+
+  "敵国顔": {
+    icon: "🔥",
+    description:
+      "強いエネルギーと野心を感じさせる顔。華やかさの中に少し危うい魅力があり、物語では主人公の前に立ちはだかるライバルのようなタイプ。"
+  },
+
+  "救国顔": {
+    icon: "🌻",
+    description:
+      "明るく親しみやすく、老若男女から愛されるような顔。笑顔がよく似合う、太陽のような好青年タイプ。"
+  },
+
+  "傾国顔": {
+    icon: "🌙",
+    description:
+      "月の光のような儚さと、どこか影のある美しさを持つ顔。見る人を惹きつける魔性の魅力を感じさせるタイプ。"
+  },
+
+  "亡国顔": {
+    icon: "🥀",
+    description:
+      "どこか不憫さや物語性を感じさせる顔。美しさだけでは説明できない、守ってあげたくなるような独特の魅力を持つタイプ。"
+  }
+
+};
+
+
+/* =========================================================
+   DIAGNOSIS SETTINGS
+========================================================= */
+
+const QUESTION_COUNT = 15;
+
+let questions = [];
+let currentQuestion = 0;
+
+let scores = {
+  "建国顔": 0,
+  "継承顔": 0,
+  "護国顔": 0,
+  "敵国顔": 0,
+  "救国顔": 0,
+  "傾国顔": 0,
+  "亡国顔": 0
+};
+
+
+/* =========================================================
+   SHUFFLE
+========================================================= */
+
+function shuffle(array) {
+
+  const arr = [...array];
+
+  for (let i = arr.length - 1; i > 0; i--) {
+
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+
+  }
+
+  return arr;
+}
+
+
+/* =========================================================
+   CREATE QUESTIONS
+========================================================= */
+
+function createQuestions() {
+
+  const shuffled = shuffle(members);
+
+  questions = [];
+
+  let index = 0;
+
+  for (let i = 0; i < QUESTION_COUNT; i++) {
+
+    let a = shuffled[index % shuffled.length];
+    let b = shuffled[(index + 1) % shuffled.length];
+
+    index += 2;
+
+    if (a.name === b.name) {
+      b = shuffled[(index + 1) % shuffled.length];
+      index++;
+    }
+
+    questions.push([a, b]);
+
+  }
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startDiagnosis() {
+
+  scores = {
+    "建国顔": 0,
+    "継承顔": 0,
+    "護国顔": 0,
+    "敵国顔": 0,
+    "救国顔": 0,
+    "傾国顔": 0,
+    "亡国顔": 0
+  };
+
+  currentQuestion = 0;
+
+  createQuestions();
+
+  showScreen("questionScreen");
+
+  showQuestion();
+
+}
+
+
+/* =========================================================
+   SHOW QUESTION
+========================================================= */
+
+function showQuestion() {
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("questionNumber").textContent =
+    `QUESTION ${currentQuestion + 1} / ${QUESTION_COUNT}`;
+
+  document.getElementById("progress").style.width =
+    `${((currentQuestion) / QUESTION_COUNT) * 100}%`;
+
+  const cards = document.getElementById("cards");
+
+  cards.innerHTML = "";
+
+  q.forEach(member => {
+
+    const card = document.createElement("div");
+
+    card.className = "member-card";
+
+    let photoHTML;
+
+    if (member.photo && member.photo.trim() !== "") {
+
+      photoHTML = `
+        <img
+          class="member-photo"
+          src="${member.photo}"
+          alt="${member.name}"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        >
+        <div class="photo-placeholder" style="display:none;">
+          ${member.name.charAt(0)}
+        </div>
+      `;
+
+    } else {
+
+      photoHTML = `
+        <div class="photo-placeholder">
+          ${member.name.charAt(0)}
+        </div>
+      `;
+
+    }
+
+    card.innerHTML = `
+      ${photoHTML}
+
+      <div class="member-name">
+        ${member.name}
+      </div>
+
+      <div class="member-group">
+        ${member.group}
+      </div>
+
+      <div class="tap-text">
+        SELECT
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+      selectMember(member);
+    });
+
+    cards.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+function selectMember(member) {
+
+  scores[member.type]++;
+
+  currentQuestion++;
+
+  if (currentQuestion >= QUESTION_COUNT) {
+
+    showResult();
+
+  } else {
+
+    showQuestion();
+
+  }
+
+}
+
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+function showResult() {
+
+  showScreen("resultScreen");
+
+  document.getElementById("progress").style.width = "100%";
+
+  const sorted = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1]);
+
+  const winnerType = sorted[0][0];
+
+  const total = QUESTION_COUNT;
+
+  const winnerPercent =
+    Math.round((scores[winnerType] / total) * 100);
+
+  document.getElementById("resultIcon").textContent =
+    faceTypes[winnerType].icon;
+
+  document.getElementById("resultType").textContent =
+    winnerType;
+
+  document.getElementById("resultPercent").textContent =
+    `${winnerPercent}%`;
+
+  document.getElementById("resultDescription").textContent =
+    faceTypes[winnerType].description;
+
+  const breakdown = document.getElementById("breakdown");
+
+  breakdown.innerHTML = "";
+
+  sorted.forEach(([type, score]) => {
+
+    const percent =
+      Math.round((score / total) * 100);
+
+    const row = document.createElement("div");
+
+    row.className = "type-row";
+
+    row.innerHTML = `
+      <div>
+        ${faceTypes[type].icon} ${type}
+      </div>
+
+      <div class="bar">
+        <div
+          class="bar-inner"
+          style="width:${percent}%"
+        ></div>
+      </div>
+
+      <div>
+        ${percent}%
+      </div>
+    `;
+
+    breakdown.appendChild(row);
+
+  });
+
+}
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+function restartDiagnosis() {
+
+  showScreen("startScreen");
+
+}
+
+
+/* =========================================================
+   SCREEN
+========================================================= */
+
+function showScreen(id) {
+
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+</script>
+
+</body>
+</html>
